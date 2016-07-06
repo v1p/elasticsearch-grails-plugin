@@ -13,7 +13,7 @@ class DeepDomainClassMarshaller extends DefaultMarshaller {
         if (!scm) {
             throw new IllegalStateException("Domain class ${domainClass} is not searchable.")
         }
-        for (GrailsDomainClassProperty prop in domainClass.persistantProperties) {
+        for (GrailsDomainClassProperty prop in domainClass.properties) {
             def propertyMapping = scm.getPropertyMapping(prop.name)
             if (!propertyMapping) {
                 continue
@@ -25,12 +25,22 @@ class DeepDomainClassMarshaller extends DefaultMarshaller {
             // Domain marshalling
             if (DomainClassArtefactHandler.isDomainClass(propertyClass)) {
                 String searchablePropertyName = getSearchablePropertyName()
-                if (propertyValue.class."$searchablePropertyName") {
-                    // todo fixme - will throw exception when no searchable field.
-                    marshallingContext.lastParentPropertyName = prop.name
-                    marshallResult += [(prop.name): ([id: propertyValue.ident(), 'class': propertyClassName] + marshallingContext.delegateMarshalling(propertyValue, propertyMapping.maxDepth))]
+                //Fix w.r.t ElasticSearch GeoMapper exceptions, for a geo_point index object
+                // only lat and lon are required, not the id or class properties
+                if (propertyMapping.isGeoPoint()) {
+                    if (propertyValue.class."$searchablePropertyName") {
+                        // todo fixme - will throw exception when no searchable field.
+                        marshallingContext.lastParentPropertyName = prop.name
+                        marshallResult += [(prop.name): (marshallingContext.delegateMarshalling(propertyValue, propertyMapping.maxDepth))]
+                    }
                 } else {
-                    marshallResult += [(prop.name): [id: propertyValue.ident(), 'class': propertyClassName]]
+                    if (propertyValue.class."$searchablePropertyName") {
+                        // todo fixme - will throw exception when no searchable field.
+                        marshallingContext.lastParentPropertyName = prop.name
+                        marshallResult += [(prop.name): ([id: propertyValue.ident(), 'class': propertyClassName] + marshallingContext.delegateMarshalling(propertyValue, propertyMapping.maxDepth))]
+                    } else {
+                        marshallResult += [(prop.name): [id: propertyValue.ident(), 'class': propertyClassName]]
+                    }
                 }
 
                 // Non-domain marshalling

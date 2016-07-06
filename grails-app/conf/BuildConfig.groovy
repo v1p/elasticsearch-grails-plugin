@@ -1,14 +1,20 @@
 grails.project.work.dir = 'target'
 grails.project.docs.output.dir = 'docs' // for the gh-pages branch
 
-grails.project.dependency.distribution = {
-    remoteRepository(id: 'snapshots-repo', url: 'http://noams.artifactoryonline.com/noams/grails-elasticsearch-plugin-snapshots/') {
-        authentication username: System.getProperty('DEPLOYER_USERNAME'), password: System.getProperty('DEPLOYER_PASSWORD')
-    }
-    remoteRepository(id: 'rc-repo', url: 'http://noams.artifactoryonline.com/noams/grails-elasticsearch-plugin-rc/') {
-        authentication username: System.getProperty('DEPLOYER_USERNAME'), password: System.getProperty('DEPLOYER_PASSWORD')
-    }
-}
+//grails.project.dependency.distribution = {
+//    remoteRepository(id: 'snapshots-repo', url: 'http://noams.artifactoryonline.com/noams/grails-elasticsearch-plugin-snapshots/') {
+//        authentication username: System.getProperty('DEPLOYER_USERNAME'), password: System.getProperty('DEPLOYER_PASSWORD')
+//    }
+//    remoteRepository(id: 'rc-repo', url: 'http://noams.artifactoryonline.com/noams/grails-elasticsearch-plugin-rc/') {
+//        authentication username: System.getProperty('DEPLOYER_USERNAME'), password: System.getProperty('DEPLOYER_PASSWORD')
+//    }
+//}
+grails.project.repos.wanteet.url = "http://maven.wanteet.com/artifactory/grails-plugins"
+grails.project.repos.default = "wanteet"
+grails.project.repos.wanteet.username = "release"
+grails.project.repos.wanteet.password = "MoreT1m3"
+grails.release.scm.enabled = false
+
 grails.project.dependency.resolver = 'maven' // or ivy
 grails.project.dependency.resolution = {
 

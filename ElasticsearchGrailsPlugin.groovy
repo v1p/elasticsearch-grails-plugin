@@ -35,10 +35,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class ElasticsearchGrailsPlugin {
+    def version = "99.0.0.5" // added by set-version
 
     private static final Logger LOG = LoggerFactory.getLogger(this)
 
-    def version = '0.0.4.x-SNAPSHOT'
     def grailsVersion = '2.2.0 > *'
 
     def loadAfter = ['services', 'mongodb']

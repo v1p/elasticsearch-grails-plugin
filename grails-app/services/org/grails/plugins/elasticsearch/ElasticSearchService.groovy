@@ -27,6 +27,7 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder
 import org.elasticsearch.search.SearchHit
 import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.highlight.HighlightBuilder
+import org.elasticsearch.search.internal.InternalSearchHitField
 import org.elasticsearch.search.sort.SortBuilder
 import org.elasticsearch.search.sort.SortOrder
 import org.grails.plugins.elasticsearch.mapping.SearchableClassMapping
@@ -426,7 +427,43 @@ class ElasticSearchService implements GrailsApplicationAware {
             LOG.debug "Search returned ${result.total ?: 0} result(s)."
 
             // Convert the hits back to their initial type
-            result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
+//            result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
+
+            // Convert the hits back to their initial type or not :-/
+
+            Boolean raw = params.raw?.toBoolean()
+            if (raw == null) {
+                raw = false
+            }
+
+            if (!raw) {
+                result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
+            } else {
+                result.searchResults = []
+                searchHits.each { SearchHit hit ->
+                    def source = [:]
+                    hit.source.entrySet().each {
+                        source[it.key] = it.value
+                    }
+                    source['id'] = hit.id()
+                    result.searchResults.add(source)
+                }
+            }
+
+            if (params.raw) {
+                searchHits.each { hit ->
+                    def map = hit.source
+                    map.put("id", hit.id)
+                    if (hit.fields().size() > 0) {
+                        for (String key : hit.fields().keySet().toArray(new String[0])) {
+                            map.put(key, ((InternalSearchHitField) hit.fields().get(key)).value());
+                        }
+                    }
+                    result.searchResults.add(map)
+                }
+            } else {
+                result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
+            }
 
             // Extract highlight information.
             // Right now simply give away raw results...

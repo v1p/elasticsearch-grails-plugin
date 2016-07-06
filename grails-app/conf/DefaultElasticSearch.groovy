@@ -62,6 +62,11 @@ elasticSearch {
     searchableProperty.name = 'searchable'
 
     /**
+     * Include transients
+     */
+    includeTransients = false
+
+    /**
      * The strategy to be used in case of a conflict installing mappings
      */
     migration.strategy = 'alias'
