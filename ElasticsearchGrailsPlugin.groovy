@@ -35,7 +35,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class ElasticsearchGrailsPlugin {
-    def version = "99.0.0.5" // added by set-version
+    def version = "99.0.0.6" // added by set-version
 
     private static final Logger LOG = LoggerFactory.getLogger(this)
 

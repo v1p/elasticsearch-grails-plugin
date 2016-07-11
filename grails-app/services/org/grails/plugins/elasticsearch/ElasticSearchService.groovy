@@ -440,17 +440,6 @@ class ElasticSearchService implements GrailsApplicationAware {
                 result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
             } else {
                 result.searchResults = []
-                searchHits.each { SearchHit hit ->
-                    def source = [:]
-                    hit.source.entrySet().each {
-                        source[it.key] = it.value
-                    }
-                    source['id'] = hit.id()
-                    result.searchResults.add(source)
-                }
-            }
-
-            if (params.raw) {
                 searchHits.each { hit ->
                     def map = hit.source
                     map.put("id", hit.id)
@@ -461,8 +450,6 @@ class ElasticSearchService implements GrailsApplicationAware {
                     }
                     result.searchResults.add(map)
                 }
-            } else {
-                result.searchResults = domainInstancesRebuilder.buildResults(searchHits)
             }
 
             // Extract highlight information.
